@@ -4,6 +4,14 @@ def setup_macro(start_recording_hotkey='F7',
                 stop_recording_hotkey='F8',
                 playback_hotkey='F9',
                 playback_speed=1.0):
+    """
+    Records all keyboard events a user generates and plays back when requested,
+    at a given speed factor. If the speed factor is 0.0, it'll be played back
+    instantly.
+
+    Recording actions overwrites the previous actions and a recorded set of
+    actions can be played back any number of times.
+    """
 
     hotkey_keycodes = map(name_to_keycode, [start_recording_hotkey,
                                             stop_recording_hotkey,
