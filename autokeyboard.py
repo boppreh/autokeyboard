@@ -87,8 +87,23 @@ def setup_macro(start_recording_hotkey='F7',
     register_hotkey(playback_hotkey, playback)
 
 if __name__ == '__main__':
-    setup_text_shortcuts({'F1': 'asdf'})
-    setup_shortcuts({'F2': ['win+d', 'win+r']})
-    setup_turbo('F3')
-    setup_macro(playback_speed=0)
+    from ConfigParser import ConfigParser
+    config = ConfigParser()
+    config.read('config.ini')
+
+    turbo_hotkey = config.get('Hotkeys', 'turbo')
+    start_recording = config.get('Hotkeys', 'start_recording')
+    stop_recording = config.get('Hotkeys', 'stop_recording')
+    playback = config.get('Hotkeys', 'playback')
+
+    speed = float(config.get('General', 'playback_speed'))
+
+    text_shortcuts = dict(config.items('TextShortcuts'))
+    shortcuts = {key: combinations.split(',') for key, combinations in
+                 config.items('CombinationShortcuts')}
+
+    setup_text_shortcuts(text_shortcuts)
+    setup_shortcuts(shortcuts)
+    setup_turbo(turbo_hotkey)
+    setup_macro(start_recording, stop_recording, playback, playback_speed=speed)
     raw_input()
