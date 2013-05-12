@@ -1,5 +1,13 @@
 from keyboard import *
 
+def setup_shortcuts(text_by_combination):
+    """
+    Defines a series of key combinations that, when pressed, type the
+    corresponding text excerpt.
+    """
+    for combination, text in text_by_combination.items():
+        register_hotkey(combination, write, [text])
+
 def setup_macro(start_recording_hotkey='F7',
                 stop_recording_hotkey='F8',
                 playback_hotkey='F9',
@@ -42,5 +50,6 @@ def setup_macro(start_recording_hotkey='F7',
     register_hotkey(playback_hotkey, playback)
 
 if __name__ == '__main__':
+    setup_shortcuts({'F1': 'asdf'})
     setup_macro(playback_speed=0)
     raw_input()
