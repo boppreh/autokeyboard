@@ -1,3 +1,4 @@
+from time import sleep
 from keyboard import *
 
 def setup_text_shortcuts(text_by_shortcut):
@@ -40,6 +41,7 @@ def setup_turbo(hotkey):
 
         elif event.keycode in turboed and event.event_type == KEY_DOWN:
             release_keycode(event.keycode)
+            sleep(0.01)
 
     add_handler(handler)
 
