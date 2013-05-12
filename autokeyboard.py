@@ -1,12 +1,20 @@
 from keyboard import *
 
-def setup_shortcuts(text_by_combination):
+def setup_text_shortcuts(text_by_shortcut):
     """
     Defines a series of key combinations that, when pressed, type the
     corresponding text excerpt.
     """
-    for combination, text in text_by_combination.items():
-        register_hotkey(combination, write, [text])
+    for shortcut, text in text_by_shortcut.items():
+        register_hotkey(shortcut, write, [text])
+
+def setup_shortcuts(combinations_by_shortcut):
+    """
+    Defines a series of key combinations that, when pressed, simulate the
+    pressing of a list of key combinations.
+    """
+    for shortcut, combinations in combinations_by_shortcut.items():
+        register_hotkey(shortcut, lambda: map(send, combinations))
 
 def setup_macro(start_recording_hotkey='F7',
                 stop_recording_hotkey='F8',
@@ -50,6 +58,7 @@ def setup_macro(start_recording_hotkey='F7',
     register_hotkey(playback_hotkey, playback)
 
 if __name__ == '__main__':
-    setup_shortcuts({'F1': 'asdf'})
+    setup_text_shortcuts({'F1': 'asdf'})
+    setup_shortcuts({'F2': ['win+d', 'win+r']})
     setup_macro(playback_speed=0)
     raw_input()
