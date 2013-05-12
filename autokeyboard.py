@@ -16,6 +16,33 @@ def setup_shortcuts(combinations_by_shortcut):
     for shortcut, combinations in combinations_by_shortcut.items():
         register_hotkey(shortcut, lambda: map(send, combinations))
 
+def setup_turbo(hotkey):
+    """
+    Defines a hotkey that, when pressed in combination to another key,
+    "turboes" that other key, making it send press and release events when held
+    down.
+
+    When the hotkey+key combination is pressed again, it clears the turbo
+    status for that key.
+    """
+    turboed = set()
+    hotkey_keycode = name_to_keycode(hotkey)
+
+    def handler(event):
+        if (is_pressed(hotkey)
+            and event.keycode != hotkey_keycode
+            and event.event_type == KEY_DOWN):
+
+            if event.keycode in turboed:
+                turboed.remove(event.keycode)
+            else:
+                turboed.add(event.keycode)
+
+        elif event.keycode in turboed and event.event_type == KEY_DOWN:
+            release_keycode(event.keycode)
+
+    add_handler(handler)
+
 def setup_macro(start_recording_hotkey='F7',
                 stop_recording_hotkey='F8',
                 playback_hotkey='F9',
@@ -60,5 +87,6 @@ def setup_macro(start_recording_hotkey='F7',
 if __name__ == '__main__':
     setup_text_shortcuts({'F1': 'asdf'})
     setup_shortcuts({'F2': ['win+d', 'win+r']})
+    setup_turbo('F3')
     setup_macro(playback_speed=0)
     raw_input()
