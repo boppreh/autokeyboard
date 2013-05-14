@@ -1,4 +1,5 @@
 from time import sleep
+from threading import Thread, Lock
 from keyboard import *
 
 def setup_text_shortcuts(text_by_shortcut):
@@ -17,7 +18,7 @@ def setup_shortcuts(combinations_by_shortcut):
     for shortcut, combinations in combinations_by_shortcut.items():
         register_hotkey(shortcut, lambda: map(send, combinations))
 
-def setup_turbo(hotkey):
+def setup_turbo(hotkey, frequency=5.0):
     """
     Defines a hotkey that, when pressed in combination to another key,
     "turboes" that other key, making it send press and release events when held
@@ -28,6 +29,18 @@ def setup_turbo(hotkey):
     """
     turboed = set()
     hotkey_keycode = name_to_keycode(hotkey)
+    lock = Lock()
+
+    def turbo_thread():
+        while True:
+            lock.acquire()
+            if not is_pressed(hotkey):
+                for keycode in filter(is_pressed, turboed):
+                    press_keycode(keycode)
+                    sleep(0.01)
+                    release_keycode(keycode)
+            lock.release()
+            sleep(1 / float(frequency))
 
     def handler(event):
         if (is_pressed(hotkey)
@@ -35,15 +48,17 @@ def setup_turbo(hotkey):
             and event.event_type == KEY_DOWN):
 
             if event.keycode in turboed:
+                if len(turboed) == 0:
+                    lock.acquire()
                 turboed.remove(event.keycode)
             else:
+                if len(turboed) == 0:
+                    lock.release()
                 turboed.add(event.keycode)
 
-        elif event.keycode in turboed and event.event_type == KEY_DOWN:
-            release_keycode(event.keycode)
-            sleep(0.01)
-
+    lock.acquire()
     add_handler(handler)
+    Thread(target=turbo_thread).start()
 
 def setup_macro(start_recording_hotkey='F7',
                 stop_recording_hotkey='F8',
@@ -97,6 +112,7 @@ if __name__ == '__main__':
     playback = config.get('Hotkeys', 'playback')
 
     speed = float(config.get('General', 'playback_speed'))
+    frequency = config.get('General', 'turbo_frequency')
 
     text_shortcuts = dict(config.items('TextShortcuts'))
     shortcuts = {key: combinations.split(',') for key, combinations in
@@ -104,6 +120,6 @@ if __name__ == '__main__':
 
     setup_text_shortcuts(text_shortcuts)
     setup_shortcuts(shortcuts)
-    setup_turbo(turbo_hotkey)
+    setup_turbo(turbo_hotkey, frequency)
     setup_macro(start_recording, stop_recording, playback, playback_speed=speed)
     raw_input()
