@@ -6,17 +6,24 @@ keyboard actions. It listens to global hotkeys and generates keyboard events
 that mimic user keyboard interactions to the current application.
 
 
+Hotkeys
+-------
+
+Press a key combination and it executes a system command. Simple as that. Can
+launch programs, run scripts or do any wacky thing your OS console allows.
+
+
 Text Shortcuts
 --------------
 
-Types a given text excerpt when a hotkey is pressed. Useful for canned replies
+Types a given text excerpt when a shortcut is pressed. Useful for canned replies
 and filling out form data. Supported charset is very limited at the moment.
 
 
 Generic Shortcuts
 -----------------
 
-Simulates a whole chain of arbitrary keypresses when the hotkey is invoked.
+Simulates a whole chain of arbitrary keypresses when the shortcut is invoked.
 Useful for automating tasks.
 
 
@@ -25,7 +32,7 @@ Turbo
 
 Used to speed up keys. When a "turboed" key is held, it emits hold and release
 events pretending it is being constantly pressed. To turbo a key, just press
-the key while holding the turbo hotkey. Doing so again clears the modification.
+the key while holding the turbo shortcut. Doing so again clears the modification.
 
 The name comes from the button available in a few video game controllers that
 does the same thing, so you can guess this is perfect for games.
@@ -34,7 +41,7 @@ does the same thing, so you can guess this is perfect for games.
 Macro
 -----
 
-One hotkey starts recording, another stops recording and the third will
+One shortcut starts recording, another stops recording and the third will
 playback everything you recorded. Simple, efficient, tremendously useful. The
 playback is done at the same speed recorded or you can configure a speed
 factor (try 0 for instant replay).

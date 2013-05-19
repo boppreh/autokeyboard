@@ -1,6 +1,7 @@
 from time import sleep
 from threading import Thread, Lock
 from keyboard import *
+import os
 
 def setup_text_shortcuts(text_by_shortcut):
     """
@@ -16,7 +17,16 @@ def setup_shortcuts(combinations_by_shortcut):
     pressing of a list of key combinations.
     """
     for shortcut, combinations in combinations_by_shortcut.items():
-        register_hotkey(shortcut, lambda: map(send, combinations))
+        def callback():
+            for combination in combinations:
+                send(combination)
+        register_hotkey(shortcut, callback)
+
+def setup_hotkey(commands_by_hotkey):
+    for shortcut, command in commands_by_hotkey.items():
+        def callback():
+            os.system(command)
+        register_hotkey(shortcut, callback)
 
 def setup_turbo(hotkey, frequency=5.0):
     """
@@ -117,9 +127,11 @@ if __name__ == '__main__':
     text_shortcuts = dict(config.items('TextShortcuts'))
     shortcuts = {key: combinations.split(',') for key, combinations in
                  config.items('CombinationShortcuts')}
+    commands = dict(config.items('CommandShortcuts'))
 
     setup_text_shortcuts(text_shortcuts)
     setup_shortcuts(shortcuts)
     setup_turbo(turbo_hotkey, frequency)
     setup_macro(start_recording, stop_recording, playback, playback_speed=speed)
+    setup_hotkey(commands)
     raw_input()
